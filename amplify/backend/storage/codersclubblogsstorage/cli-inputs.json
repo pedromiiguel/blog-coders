@@ -1,0 +1,15 @@
+{
+  "resourceName": "codersclubblogsstorage",
+  "policyUUID": "500c2a6f",
+  "bucketName": "codersclubblogstorage",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ"
+  ],
+  "triggerFunction": "S3Triggera3d6bc19",
+  "groupAccess": {}
+}
