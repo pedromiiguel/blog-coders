@@ -71,19 +71,6 @@ export const createBlog = /* GraphQL */ `
       id
       name
       posts {
-        items {
-          id
-          title
-          content
-          blogID
-          authorName
-          thumbnailKey
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
         nextToken
         startedAt
       }
@@ -104,19 +91,6 @@ export const updateBlog = /* GraphQL */ `
       id
       name
       posts {
-        items {
-          id
-          title
-          content
-          blogID
-          authorName
-          thumbnailKey
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
         nextToken
         startedAt
       }
@@ -137,19 +111,6 @@ export const deleteBlog = /* GraphQL */ `
       id
       name
       posts {
-        items {
-          id
-          title
-          content
-          blogID
-          authorName
-          thumbnailKey
-          createdAt
-          updatedAt
-          _version
-          _deleted
-          _lastChangedAt
-        }
         nextToken
         startedAt
       }

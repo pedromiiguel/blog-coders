@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
-import { Container } from './styles';
+import { Container, ButtonContainer } from './styles';
 import 'react-quill/dist/quill.snow.css';
 import { InputRow } from 'aws-amplify-react';
+import { useNavigate } from 'react-router-dom';
+
+import { Button, withAuthenticator } from '@aws-amplify/ui-react';
+import { API, graphqlOperation, Storage, Auth } from 'aws-amplify';
+import { GraphQLResult } from '@aws-amplify/api-graphql';
+import { createPost } from '../../graphql/mutations';
+import { CreatePostMutation } from '../../API';
 
 type Thumbnail = {
   filename: string;
@@ -14,6 +21,8 @@ function Editor() {
   const [content, setContent] = useState('');
   const [title, setTitle] = useState('');
   const [thumbnail, setThumbnail] = useState<Thumbnail>();
+
+  const navigate = useNavigate();
 
   const handleContentChange = (text: string) => {
     setContent(text);
@@ -35,10 +44,49 @@ function Editor() {
     });
   };
 
+  const handlePostCreations = async () => {
+    if (!thumbnail) return;
+
+    try {
+      const { key } = await Storage.put(
+        `${thumbnail.filename}_${Date.now()}`,
+        thumbnail.file
+      );
+
+      const user = await Auth.currentAuthenticatedUser();
+
+      (await API.graphql(
+        graphqlOperation(createPost, {
+          input: {
+            title,
+            content,
+            thumbnailKey: key,
+            authorName: user.attributes.name,
+            blogID: String(process.env.REACT_APP_BLOG_ID)
+          },
+        })
+      )) as GraphQLResult<CreatePostMutation>;
+
+      navigate('/posts')
+    } catch (error) {}
+  };
+
+  const goToHome = () => {
+    navigate('/');
+  };
   return (
     <Container>
-      <img src={thumbnail?.fileUrl} alt="Capa" />
-      <InputRow placeholder="Capa" onChange={handleThumbnailChange} />
+      <ButtonContainer>
+        <Button onClick={goToHome}>Voltar aos posts</Button>
+        <Button onClick={handlePostCreations}>Salvar post</Button>
+      </ButtonContainer>
+      {thumbnail && <img src={thumbnail.fileUrl} alt="Capa" />}
+      <InputRow
+        type="file"
+        placeholder="Capa"
+        onChange={handleThumbnailChange}
+        accept="image/png, image/jpeg"
+      />
 
       <InputRow
         placeholder="Título"
@@ -50,4 +98,4 @@ function Editor() {
   );
 }
 
-export default Editor;
+export default withAuthenticator(Editor, { socialProviders: ['google'] });
